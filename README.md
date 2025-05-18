@@ -18,3 +18,25 @@ The entire solution was deployed using a Node.js Express server to provide a cha
 
 One optimization explored was reranking sentences within retrieved paragraphs to reduce token usage, which was particularly beneficial when using Groq Cloud due to its token limitations.
 Also incorporated a seperate route to upload pdf, and prompt context so that any pdf can be used.
+
+
+
+# Instructions before use :
+
+Install node js application into your pc and configure its path.
+Then run npm install to run all the node packages.
+Current used node packages is labelled in package.json file
+
+Then install all the necessary python packages which is labelled inside requirements_rag.txt.
+Recommended to use a virtual environment for that.
+Torch,Torchvision,Torchaudio with cuda is optional, can move with normal Torch,Torchvision,Torchaudio.
+
+Run the fast api server by running the main.py file inside classifiers folder.
+Always make sure to upload pdf or ask question only after running the fastapi server and then the node server to access the webapp.
+
+It is important to create an account in playground groq or huggingface to generate api keys and use the require models.
+The apikeys should be inside the python file names AI_GATEWAYS inside the classifiers folder.
+
+UPLOADING THE PDF WILL SHOW AN ERROR MESSAGE, BUT WILL BE WORKING IN BACKGROUND, CHECK FASTAPI SERVER TO CONFIRM THAT.
+
+
