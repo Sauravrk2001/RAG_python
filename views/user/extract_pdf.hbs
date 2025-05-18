@@ -1,0 +1,168 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"> 
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #474545;
+        }
+
+        .upload-container {
+            text-align: center;
+        }
+
+        #pdf-upload-button {
+            width: 100px;
+            height: 100px;
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+            background: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: 0.3s ease-in-out;
+        }
+
+        #pdf-upload-button:hover {
+            background: #6f726f;
+        }
+
+        #pdf-text {
+            margin-top: 10px;
+            font-size: 18px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        #pdf-input {
+            display: none;
+        }
+
+        #context-topic {
+            width: 250px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #submit-button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            color: white;
+        }
+
+        .file-info i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .file-info span {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <form id="upload-form" enctype="multipart/form-data">
+            <button type="button" id="pdf-upload-button">+</button>
+            <p id="pdf-text">Add your PDF file</p>
+            <input type="file" id="pdf-input" name="pdfFile" accept="application/pdf">
+            
+            <input type="text" id="context-topic" name="contextTopic" placeholder="Enter a topic (max 50 chars)" maxlength="50">
+            
+            <button type="button" id="submit-button">Submit</button>
+            
+            <div class="file-info" id="file-info" style="display:none;">
+                <i class="fas fa-file-pdf"></i> 
+                <span id="file-name"></span> 
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("pdf-upload-button").addEventListener("click", function () {
+            document.getElementById("pdf-input").click();
+        });
+
+        document.getElementById("submit-button").addEventListener("click", async function () {
+            const pdfFile = document.getElementById("pdf-input").files[0];
+            const contextTopic = document.getElementById("context-topic").value.trim();
+
+            if (contextTopic === "") {
+                alert("Enter a valid context topic.");
+                return;
+            }
+
+            const formData = new FormData();
+            if (pdfFile) {
+                formData.append("pdfFile", pdfFile);
+                formData.append("pdfPresent", "true");
+            } else {
+                formData.append("pdfPresent", "false");
+            }
+            formData.append("contextTopic", contextTopic);
+
+            try {
+                const response = await fetch("/upload_pdf", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    window.location.href = result.redirectUrl;  
+                } else {
+                    alert("Error processing content.");
+                }
+
+            } catch (error) {
+                console.error("Error uploading file:", error);
+                alert("Failed to upload PDF.");
+            }
+        });
+
+        document.getElementById("pdf-input").addEventListener("change", function () {
+            const pdfFile = this.files[0];
+
+            if (pdfFile) {
+                document.getElementById("file-info").style.display = "flex";
+                document.getElementById("file-name").textContent = pdfFile.name;
+            }
+        });
+
+        document.getElementById("context-topic").addEventListener("input", function () {
+            if (this.value.length > 50) {
+                this.value = this.value.substring(0, 50);
+            }
+        });
+    </script>
+</body>
